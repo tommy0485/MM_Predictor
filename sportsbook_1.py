@@ -10,6 +10,8 @@ import pandas as pd
 from sportsipy.ncaab.teams import Team
 from sportsipy.ncaab.boxscore import Boxscore
 from sportsipy.ncaab.boxscore import Boxscores
+#run "pip install requests-html" within command prompt to install library before running program
+from requests_html import HTMLSession
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 pd.options.display.max_colwidth = 200
@@ -284,13 +286,80 @@ def unskilledProp2Bet(bet, choice):
 # makes an exotic prop 1 bet
 # which team will score first?
 def exoticProp1Bet(bet, choice):
-    pass
+    session = HTMLSession()
+
+    zip code = '70112'
+    day = 'monday'
+
+    url = f'https://www.google.com/search?q={day}+weather+{zip_code}'
+
+    #type "my user agent" into google, then copy and paste into
+    #'User-Agent': 'Insert your computer's user agent here...'
+    #this bypasses Google's bot check
+    user_agent = session.get(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36'})
+
+    current_weather = user_agent.html.find('div.VQF4g', first=True).find('span#wob_dc', first=True).text
+    string_showers = 'howers'
+    string_snow = 'now'
+    string_rain = 'ain'
+    showers = False
+    if string_rain in current_weather:
+        showers = True
+    elif string_showers in current_weather:
+        showers = True
+    elif string_snow in current_weather:
+        showers = True
+    else:
+        showers = False
+    #assigns min payout for betting against showers as the forecast calls
+    #for mostly sunny, assigns max payout if user bets against forecast
+    if showers == True and showers_bet == 0:
+        #fixme assign and return max payout
+        pass
+    elif showers == False and showers_bet == 1:
+        #fixme assign and return min payout
+        pass
+    else:
+        #fixme assign and return $0 payout
+        pass
+
+    #code source: https://www.youtube.com/watch?v=cta1yCb3vA8    
 
 
 # makes an exotic prop 1 bet
 # will the final combined score be odd or even?
-def exoticProp2Bet(bet, choice):
-    pass
+def exoticProp2Bet(bet, choice, even_or_odd):
+    if choice == team_1 and even_or_odd == 0:
+        if (team_1_score % 2) == 0:
+            #fixme: assign payout amount
+            pass
+        else:
+            #fixme: assign $0 payout
+            pass
+
+    elif choice == team_1 and even_or_odd == 1:
+        if (team_1_score % 2) == 0:
+            #fixme: assign $0 payout
+            pass
+        else:
+            #fixme: assign payout amount
+            pass
+
+    elif choice == team_2 and even_or_odd == 0:
+        if (team_2_score % 2) == 0:
+            #fixme: assign payout amount
+            pass
+        else:
+            #fixme: assign $0 payout
+            pass
+
+    else:
+        if (team_2_score % 2) == 0:
+            #fixme: assign $0 payout
+            pass
+        else:
+            #fixme: assign payout amount
+            pass
 
 
 # outputs the betting info in sportsbook format
@@ -379,6 +448,14 @@ def main():
         if user_bet_type == 2:
             print("Over or under?")
             user_choice = str(input())
+        elif user_bet_type == 7:
+            print('Enter 0 to bet for snow and or rain showers following the game, 1 to bet against.')
+            showers_bet = int(input())
+        elif user_bet_type == 8:
+            print('Which team\'s score do you want to bet on?')
+            team_even_odd = str(input())
+            print('Enter 0 to bet for an even score, and 1 for odd')
+            even_odd = int(input)
         else:
             print('Please enter the team: {} or {}'.format(TEAM_1, TEAM_2))
             user_choice = str(input())
