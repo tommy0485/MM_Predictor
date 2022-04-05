@@ -12,6 +12,8 @@ from sportsipy.ncaab.roster import Player
 from sportsipy.ncaab.teams import Team
 from sportsipy.ncaab.boxscore import Boxscore
 from sportsipy.ncaab.boxscore import Boxscores
+#run "pip install requests-html" within command prompt to install library before running program
+from requests_html import HTMLSession
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 pd.options.display.max_colwidth = 200
@@ -380,7 +382,39 @@ def unskilledProp2Bet(bet, choice, b_type):
 # makes an exotic prop 1 bet
 # will it rain on gameday? (night)
 def exoticProp1Bet(bet, choice, b_type):
-    pass
+    session = HTMLSession()
+    zip_code = '70112'
+    day = 'monday'
+    showers_bet = 1
+
+    url = f'https://www.google.com/search?q={day}+weather+{zip_code}'
+
+    #type "my user agent" into google, then copy and paste into
+    #'User-Agent': 'Insert your computer's user agent here...'
+    #this bypasses Google's bot check
+    user_agent = session.get(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36'})
+    current_weather = user_agent.html.find('div.VQF4g', first=True).find('span#wob_dc', first=True).text
+    string_showers = 'howers'
+    string_snow = 'now'
+    string_rain = 'ain'
+    showers = False
+    if string_rain in current_weather:
+        showers = True
+    elif string_showers in current_weather:
+        showers = True
+    elif string_snow in current_weather:
+        showers = True
+    else:
+        showers = False
+
+    if showers == False and showers_bet == 1:
+        #fixme assign max payout
+        pass
+    else:
+        #fixme assign min payout
+        pass
+
+#code source: https://www.youtube.com/watch?v=cta1yCb3vA8
 
 
 # makes an exotic prop 1 bet
@@ -490,6 +524,8 @@ def main():
         if user_bet_type == 5:
             print("yes or no?")
             user_choice = str(input())
+        if user_bet_type == 7:
+            print("Place bet on rain and or snow showers following the game?")
         if user_bet_type == 8:
             print("odd or even?")
             user_choice = str(input())
